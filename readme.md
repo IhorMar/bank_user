@@ -5,20 +5,17 @@
 Download repo
 
 # Step 2
-Add .env file to root (See below)
-
-# Step 3
 docker-compose build
 
-# Step 4
+# Step 3
 docker-compose up
 or
 docker-compose up -d
 
-# Step 5 (Find the container name)
+# Step 4 (Find the container name)
 docker container ls
 
-# Step 6 (Access the container shell)
+# Step 5 (Access the container shell)
 docker container exec -it NAMES /bin/bash
 
 ```
