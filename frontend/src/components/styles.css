@@ -1,0 +1,22 @@
+.centered-container {
+  padding-top: 150px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+}
+
+.title-data {
+    padding-top: 50px;
+    text-align: center;
+    margin-top: '20px';
+  
+}
+.custom-button {
+  width: 100px;
+}
+.table-header-title {
+  font-size: 21px;
+}
