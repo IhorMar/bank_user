@@ -49,9 +49,14 @@ Main        http://localhost:<port>/
 ## Delete everything and rebuild (Destructive!)
 ```
 docker-compose down
+
 docker volume ls
+
 docker volume rm VOLUME_NAME
+
 docker system prune -a
+
 docker build --no-cache .
+
 docker-compose up -d --build
 ```
