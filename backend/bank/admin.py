@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
         ("Personal info", {"fields": ("first_name", "last_name", "email", "banks")}),
     )
 
-    list_display = ("username", "first_name", "last_name", "email", "id")
+    list_display = ("username", "first_name", "last_name", "email", "id", "display_related_field")
     list_filter = ()
     add_fieldsets = (
         (
@@ -25,7 +25,10 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
-
+    def display_related_field(self, obj):
+        # Define your logic to retrieve information from many-to-many field or reverse foreign key
+        # Example: Concatenate names of related objects
+        return ' ; '.join("BANK: " + str(bank) for bank in obj.banks.all())
 
 admin.site.register(Bank, BankAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
