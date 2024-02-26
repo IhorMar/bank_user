@@ -1,5 +1,5 @@
-import DeleteIcon from '@mui/icons-material/Delete';
 
+import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useState, useEffect } from 'react';
 import {
   Paper,
@@ -8,13 +8,11 @@ import {
   Typography,
   Grid,
   ListItem,
-  ListItemText,
   IconButton,
-  MenuItem, List
-
+  MenuItem,
+  List,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import { API_BASE_URL } from './apiConfig';
 
 const EditBank = () => {
@@ -29,17 +27,28 @@ const EditBank = () => {
   const { bankId } = useParams();
 
   useEffect(() => {
-    // Fetch bank data by ID
-    fetch(`${API_BASE_URL}banks/${bankId}`)
-      .then(response => response.json())
-      .then(data => setBankData(data))
-      .catch(error => console.error('Error fetching bank data:', error));
+    const fetchBankData = async () => {
+      try {
+        const responseBank = await fetch(`${API_BASE_URL}banks/${bankId}`);
+        const bankData = await responseBank.json();
+        setBankData(bankData);
+      } catch (error) {
+        console.error('Error fetching bank data:', error);
+      }
+    };
 
-    // Fetch all users
-    fetch(`${API_BASE_URL}users/`)
-      .then(response => response.json())
-      .then(data => setAllUsers(data))
-      .catch(error => console.error('Error fetching all users:', error));
+    const fetchAllUsers = async () => {
+      try {
+        const responseUsers = await fetch(`${API_BASE_URL}users/`);
+        const allUsersData = await responseUsers.json();
+        setAllUsers(allUsersData);
+      } catch (error) {
+        console.error('Error fetching all users:', error);
+      }
+    };
+
+    fetchBankData();
+    fetchAllUsers();
   }, [bankId]);
 
   const handleInputChange = (field, value) => {
@@ -48,10 +57,7 @@ const EditBank = () => {
 
   const handleRemoveUserFromBank = async (userIndex) => {
     try {
-      // Perform the logic to remove the user from the bank
       const userToDelete = bankData.users[userIndex];
-
-      // Make an API call to remove the user from the bank
       const response = await fetch(`${API_BASE_URL}banks/${bankData.id}/delete-user-in-bank/${userToDelete}/`, {
         method: 'PATCH',
         headers: {
@@ -61,13 +67,11 @@ const EditBank = () => {
       });
 
       if (response.ok) {
-
-        setBankData((prevData) => {
+        setBankData(prevData => {
           const updatedUsers = [...prevData.users];
           updatedUsers.splice(userIndex, 1);
           return { ...prevData, users: updatedUsers };
         });
-
       } else {
         console.error('Failed to remove user from the bank:', response.statusText);
       }
@@ -115,7 +119,6 @@ const EditBank = () => {
       <Grid item xs={6}>
         <Paper elevation={3} style={{ padding: '20px' }}>
           <form onSubmit={handleFormSubmit}>
-
             <Typography variant="h4" gutterBottom>
               Edit Bank
             </Typography>
@@ -140,59 +143,43 @@ const EditBank = () => {
               fullWidth
               margin="normal"
             />
-
             <Typography variant="h6" component="div" gutterBottom>
               Users in the Bank
             </Typography>
-
-            {Array.isArray(bankData.users) ? bankData.users.map((userId, index) => (
-              <ListItem key={index}>
-                <TextField
-                  label="User"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={`${allUsers.find(u => u.id === userId).first_name} ${allUsers.find(u => u.id === userId).last_name}`}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-
-                <IconButton onClick={() => handleRemoveUserFromBank(index)} color="secondary">
-                  <DeleteIcon />
-                </IconButton>
-              </ListItem>
-            )) : null}
-
-            <Typography variant="h6" component="div" gutterBottom>
-              Available Users
-            </Typography>
             <List>
-              {allUsers.map((user, index) => (
+              {bankData.users.map((userId, index) => (
                 <ListItem key={index}>
-                  <ListItemText
-                    primary={`${user.first_name} ${user.last_name}`}
+                  <TextField
+                    label="User"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    value={`${allUsers.find(u => u.id === userId).first_name} ${allUsers.find(u => u.id === userId).last_name}`}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                   />
+                  <IconButton onClick={() => handleRemoveUserFromBank(index)} color="secondary">
+                    <DeleteIcon />
+                  </IconButton>
                 </ListItem>
               ))}
             </List>
-
-
+            <Typography variant="h6" component="div" gutterBottom>
+              Available Users
+            </Typography>
             <TextField
               label="Select User(s)"
               variant="outlined"
               select
               fullWidth
               margin="normal"
-              value={bankData.users}
+              value={''}
               onChange={(e) => {
                 const selectedUserId = e.target.value;
-
                 if (bankData.users.includes(selectedUserId)) {
-                  // User is already part of the bank
                   alert("User is already part of the bank!");
                 } else {
-                  // Update the bankData with the selected user ID
                   setBankData((prevData) => ({ ...prevData, users: [...prevData.users, selectedUserId] }));
                 }
               }}
@@ -203,7 +190,6 @@ const EditBank = () => {
                 </MenuItem>
               ))}
             </TextField>
-
             <Button
               type="submit"
               variant="contained"

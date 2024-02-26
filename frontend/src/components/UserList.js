@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import QueueIcon from '@mui/icons-material/Queue';
 import {
@@ -20,11 +21,18 @@ const UserList = () => {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}users/`);
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
   useEffect(() => {
-    fetch(`${API_BASE_URL}users/`)
-      .then(response => response.json())
-      .then(data => setUsers(data))
-      .catch(error => console.error('Error fetching user data:', error));
+    fetchUsers();
   }, []);
 
   const handleEdit = (userId) => {
@@ -50,14 +58,11 @@ const UserList = () => {
     }
   };
 
-
   const handleAddUser = async () => {
     try {
-      // Fetch random user data from the external API
       const responseExternalApi = await fetch(API_RANDOM_USER_URL);
       const userData = await responseExternalApi.json();
 
-      // Create a new user in Django
       const responseDjango = await fetch(`${API_BASE_URL}users/random-create/`, {
         method: 'POST',
         headers: {
@@ -67,12 +72,7 @@ const UserList = () => {
       });
 
       if (responseDjango.ok) {
-        // If the creation is successful, fetch the updated list of users
-        const responseUsers = await fetch(`${API_BASE_URL}users/`);
-        const updatedUsers = await responseUsers.json();
-
-        // Update the React state with the new user list
-        setUsers(updatedUsers);
+        fetchUsers();
       } else {
         console.error('Failed to add user to Django:', responseDjango.statusText);
       }
@@ -80,7 +80,6 @@ const UserList = () => {
       console.error('Error adding user:', error);
     }
   };
-
 
   return (
     <TableContainer component={Paper}>
@@ -96,16 +95,16 @@ const UserList = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ fontSize: '21px', fontWeight: 'bold' }}>№</TableCell>
-              <TableCell style={{ fontSize: '21px', fontWeight: 'bold' }}>Username</TableCell>
-              <TableCell style={{ fontSize: '21px', fontWeight: 'bold' }}>Banks</TableCell>
-              <TableCell style={{ fontSize: '21px', fontWeight: 'bold' }}>Actions</TableCell>
+              <TableCell className="table-header">№</TableCell>
+              <TableCell className="table-header">Username</TableCell>
+              <TableCell className="table-header">Banks</TableCell>
+              <TableCell className="table-header">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map((user, index) => (
               <TableRow key={user.id}>
-                <TableCell style={{ fontWeight: 'bold' }}>{index + 1}</TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>
                   <List>
@@ -137,4 +136,3 @@ const UserList = () => {
 };
 
 export default UserList;
-

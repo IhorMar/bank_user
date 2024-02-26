@@ -23,15 +23,28 @@ const EditUser = () => {
   const [selectedBank, setSelectedBank] = useState('');
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}users/${userId}`)
-      .then((response) => response.json())
-      .then((data) => setUser(data))
-      .catch((error) => console.error('Error fetching user data:', error));
+    const fetchUserData = async () => {
+      try {
+        const responseUser = await fetch(`${API_BASE_URL}users/${userId}`);
+        const userData = await responseUser.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
 
-    fetch(`${API_BASE_URL}banks`)
-      .then((response) => response.json())
-      .then((data) => setAvailableBanks(data))
-      .catch((error) => console.error('Error fetching available banks:', error));
+    const fetchAvailableBanks = async () => {
+      try {
+        const responseBanks = await fetch(`${API_BASE_URL}banks`);
+        const availableBanksData = await responseBanks.json();
+        setAvailableBanks(availableBanksData);
+      } catch (error) {
+        console.error('Error fetching available banks:', error);
+      }
+    };
+
+    fetchUserData();
+    fetchAvailableBanks();
   }, [userId]);
 
   const handleInputChange = (e) => {
@@ -68,7 +81,6 @@ const EditUser = () => {
     }
   };
 
-
   const isBankInUserList = (bankName) => {
     return user.banks.some((bank) => bank.bank_name === bankName);
   };
@@ -86,7 +98,6 @@ const EditUser = () => {
             },
             body: JSON.stringify({ bankId: bankToAdd.id }),
           });
-
 
           if (response.ok) {
             setUser({ ...user, banks: [...user.banks, bankToAdd] });
@@ -109,7 +120,6 @@ const EditUser = () => {
       }
     }
   };
-
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -143,10 +153,8 @@ const EditUser = () => {
         Edit User
       </Typography>
       <form onSubmit={handleFormSubmit}>
-
         <Grid container spacing={2}>
           <Grid item xs={6}>
-
             <TextField
               label="First Name"
               variant="outlined"
@@ -157,9 +165,7 @@ const EditUser = () => {
               margin="normal"
             />
           </Grid>
-
           <Grid item xs={6}>
-
             <TextField
               label="Last Name"
               variant="outlined"
@@ -170,7 +176,6 @@ const EditUser = () => {
               margin="normal"
             />
           </Grid>
-
           <Grid item xs={6}>
             <TextField
               label="Username"
@@ -194,7 +199,6 @@ const EditUser = () => {
             />
           </Grid>
         </Grid>
-
         <Typography variant="h6" component="div" gutterBottom>
           Banks
         </Typography>
@@ -216,7 +220,6 @@ const EditUser = () => {
               </ListItem>
             ))}
         </List>
-
         <Typography variant="h6" component="div" gutterBottom>
           Available Banks
         </Typography>
@@ -227,7 +230,6 @@ const EditUser = () => {
             </ListItem>
           ))}
         </List>
-
         <TextField
           label="Select Bank to Add"
           variant="outlined"
@@ -243,11 +245,9 @@ const EditUser = () => {
             </MenuItem>
           ))}
         </TextField>
-
         <Button type="button" onClick={handleAddBank} variant="outlined" color="primary" style={{ marginTop: '10px' }} >
           Add Bank
         </Button>
-
         <Button type="submit" variant="contained" color="primary" style={{ marginTop: '10px' }} >
           Save Changes
         </Button>
