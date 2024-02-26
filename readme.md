@@ -33,13 +33,13 @@ pre-commit install
 ```
 backend:
 
-API          http://localhost:<port>/api
+API          http://localhost:8000/api
 
-API Admin    http://localhost:<port>/admin/
+API Admin    http://localhost:8000/admin/
 
 frontend:
 
-Main        http://localhost:<port>/
+Main        http://localhost:3000/
 ```
 
 
