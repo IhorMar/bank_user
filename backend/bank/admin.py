@@ -26,8 +26,6 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
     def display_related_field(self, obj):
-        # Define your logic to retrieve information from many-to-many field or reverse foreign key
-        # Example: Concatenate names of related objects
         return ' ; '.join("BANK: " + str(bank) for bank in obj.banks.all())
 
 admin.site.register(Bank, BankAdmin)
